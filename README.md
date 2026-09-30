@@ -101,7 +101,7 @@ On Android 12 and newer, the app requests Nearby Devices permissions at runtime.
 
 ## Companion Peripheral
 
-This repository is intended to be used with the companion `ble-peripheral-macos` project, which:
+This repository is intended to be used with the companion [`ble-peripheral-macos`](https://github.com/gurhangure/ble-peripheral-macos) project, which:
 
 1. Advertises service `FFF0`
 2. Exposes notify/read characteristic `FFF1`

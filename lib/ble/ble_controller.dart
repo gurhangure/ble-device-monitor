@@ -26,7 +26,6 @@ class BleController extends ChangeNotifier {
   Timer? _reconnectTimer;
 
   BluetoothDevice? _selectedDevice;
-  BluetoothCharacteristic? _statusCharacteristic;
   DeviceStatus? _deviceStatus;
   DateTime? _lastUpdate;
   DeviceConnectionStatus _connectionStatus = DeviceConnectionStatus.disconnected;
@@ -169,7 +168,6 @@ class BleController extends ChangeNotifier {
 
     await _notificationSubscription?.cancel();
     _notificationSubscription = null;
-    _statusCharacteristic = null;
 
     if (_manualDisconnect) {
       _connectionStatus = DeviceConnectionStatus.disconnected;
@@ -199,7 +197,6 @@ class BleController extends ChangeNotifier {
             continue;
           }
 
-          _statusCharacteristic = characteristic;
 
           await _notificationSubscription?.cancel();
           _notificationSubscription = characteristic.onValueReceived.listen(
@@ -273,7 +270,6 @@ class BleController extends ChangeNotifier {
     await device.disconnect();
     await _notificationSubscription?.cancel();
     _notificationSubscription = null;
-    _statusCharacteristic = null;
     _connectionStatus = DeviceConnectionStatus.disconnected;
     _deviceStatus = null;
     _lastUpdate = null;
@@ -294,7 +290,6 @@ class BleController extends ChangeNotifier {
     _connectionStateSubscription = null;
     _notificationSubscription = null;
     _selectedDevice = null;
-    _statusCharacteristic = null;
     _deviceStatus = null;
     _lastUpdate = null;
     _connectionStatus = DeviceConnectionStatus.disconnected;

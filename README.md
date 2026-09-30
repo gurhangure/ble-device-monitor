@@ -1,36 +1,35 @@
 # BLE Device Monitor
 
-A small Flutter BLE application that demonstrates a production-oriented Bluetooth Low Energy (BLE) workflow: device discovery, GATT connection, characteristic notifications, connection-state handling, and automatic recovery after an unexpected disconnect.
-
-The app is designed to work with a companion macOS BLE peripheral demo that advertises a custom GATT service and streams JSON status updates.
+A small Flutter BLE application for discovering nearby Bluetooth Low Energy devices, connecting to a custom GATT service, receiving live notifications, monitoring device status, and recovering automatically from unexpected connection loss.
 
 ## Features
 
-- Scan for all nearby BLE peripherals
-- Filter discovery to the demo GATT service
-- Connect to a selected BLE device
-- Discover a custom GATT service and characteristic
-- Subscribe to characteristic notifications
-- Parse and display live device status and battery data
-- Track BLE lifecycle events in an in-app event log
-- Distinguish manual disconnects from unexpected connection loss
-- Automatically reconnect after an unexpected disconnect
-- Re-discover services and re-subscribe to notifications after reconnect
+- Scans nearby BLE devices
+- Supports filtered discovery for the demo peripheral
+- Connects to a BLE GATT peripheral
+- Discovers custom services and characteristics
+- Subscribes to live characteristic notifications
+- Displays device status and battery information
+- Tracks connection state
+- Automatically reconnects after unexpected connection loss
+- Distinguishes manual disconnects from unexpected disconnects
+- Re-discovers services and re-subscribes after reconnection
+- Displays a simple BLE event log
 
 ## BLE Contract
 
-| Item | Value |
-| --- | --- |
-| Demo device name | `BLE Demo Device` |
-| Service UUID | `FFF0` |
-| Status characteristic UUID | `FFF1` |
-| Characteristic properties | Read / Notify |
-| Notification payload | JSON |
+| Type | UUID | Behavior |
+| --- | --- | --- |
+| Primary service | `FFF0` | Demo device service |
+| Status characteristic | `FFF1` | Read + Notify |
 
-Example notification:
+Example notification payload:
 
 ```json
-{"status":"active","battery":87}
+{
+  "status": "active",
+  "battery": 87
+}
 ```
 
 ## App Flow
@@ -42,18 +41,34 @@ Discover BLE peripheral
   ↓
 Connect
   ↓
-Discover FFF0 service
+Discover GATT services
   ↓
-Subscribe to FFF1 notifications
+Find FFF0 service
   ↓
-Display live status
+Subscribe to FFF1
   ↓
-Unexpected disconnect
+Receive live notifications
   ↓
-Reconnect → rediscover → resubscribe
+Display device status
 ```
 
-An explicit user disconnect intentionally disables automatic reconnection.
+If the connection is lost unexpectedly:
+
+```text
+Connection lost
+  ↓
+Reconnecting...
+  ↓
+Connected
+  ↓
+Re-discover services
+  ↓
+Re-subscribe to notifications
+  ↓
+Live data resumes
+```
+
+A manual disconnect does not trigger automatic reconnection.
 
 ## Project Structure
 
@@ -70,34 +85,38 @@ lib/
     └── scanner_screen.dart
 ```
 
-`BleController` owns BLE lifecycle and connection state. UI screens remain focused on presentation, while `DeviceStatus` handles notification payload parsing.
-
-## Tech Stack
-
-- Flutter / Dart
-- `flutter_blue_plus`
-- `permission_handler`
-- Android BLE APIs through Flutter
-- iOS Core Bluetooth integration through Flutter
-
-## Getting Started
-
-### Requirements
+## Requirements
 
 - Flutter SDK
-- A physical Android or iOS device with BLE support
-- A BLE peripheral exposing service `FFF0` and characteristic `FFF1`
+- Android or iOS device with Bluetooth Low Energy support
+- Bluetooth enabled
+- Nearby devices permission on supported Android versions
 
-BLE scanning should be tested on physical hardware rather than an emulator.
+## Run
 
-### Run
+Install dependencies:
 
 ```bash
 flutter pub get
-flutter run
 ```
 
-On Android 12 and newer, the app requests Nearby Devices permissions at runtime. Android 11 and older use the legacy Bluetooth/location permission model.
+Run static analysis:
+
+```bash
+flutter analyze
+```
+
+Run tests:
+
+```bash
+flutter test
+```
+
+Run the application:
+
+```bash
+flutter run
+```
 
 ## Companion Peripheral
 
@@ -109,25 +128,8 @@ This repository is intended to be used with the companion [`ble-peripheral-macos
 
 Keeping the central and peripheral implementations in separate repositories makes each side independently understandable and reusable.
 
-## Testing
+## Purpose
 
-Run static analysis and tests with:
+This repository is a focused demonstration of BLE client development with Flutter.
 
-```bash
-flutter analyze
-flutter test
-```
-
-The project includes unit coverage for BLE notification payload parsing.
-
-## Platform Notes
-
-The current demo workflow was validated with a physical Android device. iOS Bluetooth usage descriptions are included, but the iOS path should be validated on physical iOS hardware before being treated as production-ready.
-
-## Scope
-
-This is a focused portfolio/demo project rather than a production device SDK. A production implementation would normally add items such as structured error reporting, reconnect backoff policies, telemetry, broader device-compatibility testing, and integration tests against target hardware.
-
-## Dependency License Note
-
-This demo uses `flutter_blue_plus` with its nonprofit/personal-use connection license option. Review that package's current license terms before using the same dependency in a commercial product.
+It is intended to demonstrate BLE discovery, GATT communication, live notifications, connection-state handling, and reconnection behavior without depending on a proprietary hardware device or protocol.

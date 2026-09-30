@@ -1,6 +1,6 @@
 # BLE Device Monitor
 
-A small Flutter companion app that demonstrates a production-oriented Bluetooth Low Energy (BLE) workflow: device discovery, GATT connection, characteristic notifications, connection-state handling, and automatic recovery after an unexpected disconnect.
+A small Flutter BLE application that demonstrates a production-oriented Bluetooth Low Energy (BLE) workflow: device discovery, GATT connection, characteristic notifications, connection-state handling, and automatic recovery after an unexpected disconnect.
 
 The app is designed to work with a companion macOS BLE peripheral demo that advertises a custom GATT service and streams JSON status updates.
 
